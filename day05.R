@@ -1,6 +1,5 @@
 library(purrr)
 library(stringr)
-# raw <- readLines("data-raw/day05.txt")
 
 rows <- 0:127
 cols <- 0:7
@@ -72,3 +71,25 @@ max(input_ids)
 
 ids_full <- min(input_ids):max(input_ids)
 setdiff(ids_full, input_ids)
+
+
+
+# BETTER ------------------------------------------------------------------
+# https://twitter.com/drob/status/1335363162271608837
+
+m <- raw %>%
+  str_split("", simplify = TRUE)
+
+row <- (m[, 1:7] == "B") %*% (2 ^ (6:0))
+col <- (m[, 8:10] == "R") %*% (2 ^ (2:0))
+
+max(8 * row + col)
+
+
+# WAY BETTER --------------------------------------------------------------
+# https://twitter.com/Emil_Hvitfeldt/status/1335356890314731520
+# https://www.reddit.com/r/adventofcode/comments/k75x7d/day_5_binary_explanation/
+
+raw %>%
+  str_replace_all(c("[FL]" = "0", "[BR]" = "1")) %>%
+  strtoi(base = 2)
