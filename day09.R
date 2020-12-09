@@ -25,18 +25,15 @@ for (i in 26:length(input)) {
 
 # question 2 --------------------------------------------------------------
 
-num
 
-# TODO: doesn't work, look later
-pass_num <- function(x, y) {
-  if (x + y > num) return(done())
-  x + y
-}
+cumsums_ge <- seq_along(input) %>%
+  set_names() %>%
+  map( ~ accumulate(input[.x:length(input)], pass_num) )
+cumsum_ok <- cumsums_ge %>%
+  keep(~ max(.x) == num) %>%
+  .[1]
+id_first <- as.numeric(names(cumsum_ok))
+id_last  <- id_first + lengths(cumsum_ok) - 1
 
-for (i in seq_along(input)) {
-  acc <- accumulate(input[i:length(input)], pass_num)
-  if (max(acc) < num) next
-  if (max(acc) == num){
-    return(input[i] + input[i + length(acc)])
-  }
-}
+sum(input[id_first:id_last]) == num
+sum(range(input[id_first:id_last]))
