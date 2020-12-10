@@ -11,7 +11,11 @@ diffs <- lead - lag
 reduce(table(diffs), `*`)
 
 
-# question 2 --------------------------------------------------------------
+# question 2, brute force, TERRIBLE IDEA ----------------------------------
+
+# will take forever to run with the actual input
+input <- c(28, 33, 18, 42, 31, 14, 46, 20, 48, 47, 24, 23, 49, 45, 19,
+           38, 39, 11, 1, 32, 25, 35, 8, 17, 7, 9, 4, 2, 34, 10, 3)
 
 # if the input is valid, return the sorted input, if not, NULL
 give_valid_arr <- function(x) {
@@ -42,4 +46,24 @@ while (length(reduced) > 1) {
   count <- count + length(reduced)
 }
 
-count
+count == 19208
+
+
+# question 2, using prob --------------------------------------------------
+# https://twitter.com/antoine_fabri/status/1336958852491841537/photo/1
+
+diffs
+
+(rle_all <- rle(diffs))                         # length of runs
+(rle_1s <- with(rle_all, lengths[values == 1])) # only care about the 1s
+
+range(diffs) # there are no 2s, we only care about the permutations of 1s
+max(rle_1s)  # max run is of 4
+
+# one 1 can't be moved
+# two 1s can be expressed two ways
+# three 1s can be expressed 4 ways
+# four 1s can be expressed 7 ways
+multilplier <- c(1, 2, 4, 7)
+
+scales::number(prod(multilplier[rle_1s]), big.mark = "")
