@@ -11,8 +11,7 @@ input <- readr::read_lines("data-raw/day12.txt")
 
 # question 1 --------------------------------------------------------------
 
-x <- 0
-y <- 0
+s <- c(x = 0, y = 0)
 d <- "E"
 
 for (i in seq_along(input)) {
@@ -24,31 +23,31 @@ for (i in seq_along(input)) {
   if (action %in% c("L", "R")) {
     d <- switch(
       instr,
-      "L90"  = ,
-      "R270" = switch(d, "E" = "N", "N" = "W", "W" = "S", "S" = "E"),
-      "R90"  = ,
-      "L270" = switch(d, "E" = "S", "S" = "W", "W" = "N", "N" = "E"),
-      "R180" = ,
-      "L180" = switch(d, "E" = "W", "W" = "E", "N" = "S", "S" = "N")
+      "L90"  = , "R270" = switch(d, "E" = "N", "N" = "W", "W" = "S", "S" = "E"),
+      "R90"  = , "L270" = switch(d, "E" = "S", "S" = "W", "W" = "N", "N" = "E"),
+      "R180" = , "L180" = switch(d, "E" = "W", "W" = "E", "N" = "S", "S" = "N")
     )
   } else {
     action <- switch(action, "F" = d, action)
-    x <- switch(action, "E" = x + value, "W" = x - value, x)
-    y <- switch(action, "N" = y + value, "S" = y - value, y)
+    s <- switch(
+      action,
+      "E" = s + (value * c(1, 0)),
+      "W" = s + (value * c(-1, 0)),
+      "N" = s + (value * c(0, 1)),
+      "S" = s + (value * c(0, -1))
+    )
   }
 }
 
-sum(abs(c(x, y)))
+sum(abs(s))
 
 
 # question 2 --------------------------------------------------------------
 
-s_x <- 0
-s_y <- 0
-d <- "E"
+s <- c(x = 0, y = 0)
+w <- c(x = 10, y = 1)
 
-w_x <- 10
-w_y <- 1
+d <- "E"
 
 for (i in seq_along(input)) {
 
@@ -57,28 +56,29 @@ for (i in seq_along(input)) {
   value  <- str_sub(instr, 2, -1) %>% as.numeric()
 
   if (action %in% c("L", "R")) {
-    # too convoluted
-    o_x <- w_x
-    o_y <- w_y
-    w_x <- switch(
+    w <- switch(
       instr,
-      "R90"  = , "L270" =  o_y,
-      "R180" = , "L180" = -o_x,
-      "R270" = , "L90"  = -o_y,
-    )
-    w_y <- switch(
-      instr,
-      "R90"  = , "L270" = -o_x,
-      "R180" = , "L180" = -o_y,
-      "R270" = , "L90"  =  o_x,
+      "R90"  = , "L270" = rev(w) * c(1, -1),
+      "R180" = , "L180" = -w,
+      "R270" = , "L90"  = rev(w) * c(-1, 1),
     )
   } else if (action == "F") {
-    s_x <- s_x + (w_x * value)
-    s_y <- s_y + (w_y * value)
+    s <- s + (w * value)
   } else {
-    w_x <- switch(action, "E" = w_x + value, "W" = w_x - value, w_x)
-    w_y <- switch(action, "N" = w_y + value, "S" = w_y - value, w_y)
+    w <- switch(
+      action,
+      "E" = w + (value * c(1, 0)),
+      "W" = w + (value * c(-1, 0)),
+      "N" = w + (value * c(0, 1)),
+      "S" = w + (value * c(0, -1))
+      )
   }
 }
 
-sum(abs(c(s_x, s_y)))
+sum(abs(s))
+
+
+# SMARTER -----------------------------------------------------------------
+
+# Using cos() and pi to rotate, assignment within switch:
+# https://twitter.com/Emil_Hvitfeldt/status/1337633974168875009/photo/2
